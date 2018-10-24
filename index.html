@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Computer Graphic Project 2</title>
+<style type="text/css">
+	html, body {
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+	}
+</style>
+</head>
+<body>
+	<script type="text/javascript" src="js/three.js"></script>
+	<script type="text/javascript" src="js/OrbitControls.js"></script>
+	<script type="text/javascript">
+		
+		var scene, camera, renderer, controls, object;
+		var frameNum = 0;
+		
+		
+		init();
+		animate();
+		
+		
+		function init() {
+			//Scene
+			var WIDTH = window.innerWidth;
+			var HEIGHT = window.innerHeight;
+			scene = new THREE.Scene();
+			
+			//Renderer
+			renderer = new THREE.WebGLRenderer({antialias:true});
+			renderer.setSize(WIDTH, HEIGHT);
+			document.body.appendChild(renderer.domElement);
+			
+			//Camera
+			camera = new THREE.PerspectiveCamera(45, WIDTH/HEIGHT, 0.1, 20000);
+			camera.position.set(0, 0, -500);
+			scene.add(camera);
+			
+			//Update size
+			window.addEventListener("resize", function(){
+				var WIDTH = window.innerWidth;
+				var HEIGHT = window.innerHeight;
+				renderer.setSize(WIDTH, HEIGHT);
+				camera.aspect = WIDTH / HEIGHT;
+				camera.updateProjectionMatrix();
+			});
+			
+			//Background color
+			renderer.setClearColor(0x333F47, 1);
+			
+			//Light
+			/*var light = new THREE.PointLight(0xffffff);
+			light.position.set(0, 0, 50);
+			scene.add(light);
+			
+			var pointLightHelper = new THREE.PointLightHelper(light);
+			scene.add(pointLightHelper);
+			
+			var light2 = new THREE.PointLight(0xffffff);
+			light2.position.set(0, 0, -50);
+			scene.add(light2);
+			
+			var pointLightHelper2 = new THREE.PointLightHelper(light2);
+			scene.add(pointLightHelper2);*/
+			
+			var spotLight1 = new THREE.SpotLight(0xffffff, 3);
+			spotLight1.position.set(0, -250, -50);
+			scene.add(spotLight1);
+			
+			var spotLight2 = new THREE.SpotLight(0xffffff, 3);
+			spotLight2.position.set(0, -250, 50);
+			scene.add(spotLight2);
+			
+			/*
+			var ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
+			scene.add(ambientLight);*/
+			
+			var directionalLight = new THREE.DirectionalLight(0xffffff);
+			directionalLight.position.set(1, 0.5, -0.25);
+			scene.add(directionalLight);
+			
+			var scale = 70;
+			var geometry = new THREE.BoxGeometry(1, 1, 1);
+      		geometry.scale(scale, scale, scale);
+			var material = new THREE.MeshPhongMaterial({color: 0x808080});
+			var cube1 = new THREE.Mesh(geometry, material);
+			cube1.position.set(scale/2, -200, 0);
+     		var cube2 = new THREE.Mesh(geometry, material);
+      		cube2.position.set(-scale/2, -200, 0);
+      
+      		var group = new THREE.Group();
+      		group.add(cube1);
+      		group.add(cube2);
+			scene.add(group);
+			
+			var loader = new THREE.ObjectLoader();
+
+			loader.load(
+				// resource URL
+				//Model comes from https://sketchfab.com/models/7446cb8cc2024952bc1066b72b9e4828
+				"models/model.json",
+				
+				// onLoad callback
+				function ( obj ) {
+					// Get the object
+					object = obj;
+					
+					var jewelMesh = new THREE.MeshPhongMaterial({color: 0xA56B02});
+					object.children[0].material[0] = jewelMesh;
+					
+					var handleMesh = new THREE.MeshPhongMaterial({color: 0x9106B});
+					object.children[0].material[1] = handleMesh;
+					
+					
+					console.log(object.children[0].material[0]);
+					//Add the object to the scene
+					scene.add( object );
+				},
+
+				// onProgress callback
+				function ( xhr ) {
+					console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+				},
+
+				// onError callback
+				function ( err ) {
+					console.error( 'An error happened' );
+				}
+			);
+			
+			//Orbit controls
+			controls = new THREE.OrbitControls(camera, renderer.domElemet);
+		}
+		
+		//Animation loop
+		function animate() {
+			requestAnimationFrame(animate);
+			
+			if(object != null){
+				frameNum += 1;
+				//object.rotation.x += 0.01;
+				//object.rotation.y += 0.01;
+				//object.position.y = 50 * Math.sin(0.01 * frameNum) + 50;
+			}
+			
+			renderer.render(scene, camera);
+			controls.update();
+		}
+		
+	</script>
+</body>
+</html>
