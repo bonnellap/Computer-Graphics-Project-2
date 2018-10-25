@@ -9,6 +9,17 @@
 		padding: 0;
 		overflow: hidden;
 	}
+		
+	#info {
+		color: white;
+		position: absolute;
+		top: 0px;
+		left: 10px;
+		width: 100%;
+		text-align: left;
+		z-index: 100;
+		display: block;
+	}
 </style>
 </head>
 <body>
@@ -16,10 +27,11 @@
 	<script type="text/javascript" src="js/OrbitControls.js"></script>
 	<script type="text/javascript">
 		
-		var scene, camera, renderer, controls, object;
+		var scene, camera, renderer, controls, object, meshArray = [];
 		var frameNum = 0;
+		var baseSize = 70;
 		
-		
+		//Run the program
 		init();
 		animate();
 		
@@ -52,50 +64,65 @@
 			//Background color
 			renderer.setClearColor(0x333F47, 1);
 			
-			//Light
-			/*var light = new THREE.PointLight(0xffffff);
-			light.position.set(0, 0, 50);
-			scene.add(light);
+			var lightIntensity = 1;
 			
-			var pointLightHelper = new THREE.PointLightHelper(light);
-			scene.add(pointLightHelper);
+			/*var light1 = new THREE.PointLight(0xffffff, lightIntensity);
+			light1.position.set(75, -160, 40);
+			scene.add(light1);
 			
-			var light2 = new THREE.PointLight(0xffffff);
-			light2.position.set(0, 0, -50);
+			var lightHelper1 = new THREE.PointLightHelper(light1);
+			scene.add(lightHelper1);
+			
+			var light2 = new THREE.PointLight(0xffffff, lightIntensity);
+			light2.position.set(-75, -160, 40);
 			scene.add(light2);
 			
-			var pointLightHelper2 = new THREE.PointLightHelper(light2);
-			scene.add(pointLightHelper2);*/
+			var lightHelper2 = new THREE.PointLightHelper(light2);
+			scene.add(lightHelper2);
 			
-			var spotLight1 = new THREE.SpotLight(0xffffff, 3);
-			spotLight1.position.set(0, -250, -50);
-			scene.add(spotLight1);
+			var light3 = new THREE.PointLight(0xffffff, lightIntensity);
+			light3.position.set(75, -160, -40);
+			scene.add(light3);
 			
-			var spotLight2 = new THREE.SpotLight(0xffffff, 3);
-			spotLight2.position.set(0, -250, 50);
-			scene.add(spotLight2);
+			var lightHelper3 = new THREE.PointLightHelper(light3);
+			scene.add(lightHelper3);
 			
-			/*
-			var ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
-			scene.add(ambientLight);*/
+			var light4 = new THREE.PointLight(0xffffff, lightIntensity);
+			light4.position.set(-75, -160, -40);
+			scene.add(light4);
 			
-			var directionalLight = new THREE.DirectionalLight(0xffffff);
-			directionalLight.position.set(1, 0.5, -0.25);
-			scene.add(directionalLight);
+			var lightHelper4 = new THREE.PointLightHelper(light4);
+			scene.add(lightHelper4);*/
 			
-			var scale = 70;
-			var geometry = new THREE.BoxGeometry(1, 1, 1);
-      		geometry.scale(scale, scale, scale);
-			var material = new THREE.MeshPhongMaterial({color: 0x808080});
-			var cube1 = new THREE.Mesh(geometry, material);
-			cube1.position.set(scale/2, -200, 0);
-     		var cube2 = new THREE.Mesh(geometry, material);
-      		cube2.position.set(-scale/2, -200, 0);
-      
-      		var group = new THREE.Group();
-      		group.add(cube1);
-      		group.add(cube2);
-			scene.add(group);
+			
+			var light5 = new THREE.PointLight(0xffffff, lightIntensity);
+			light5.position.set(100, 160, 100);
+			scene.add(light5);
+			
+			var lightHelper5 = new THREE.PointLightHelper(light5);
+			//scene.add(lightHelper5);
+			
+			var light6 = new THREE.PointLight(0xffffff, lightIntensity);
+			light6.position.set(-100, 160, 100);
+			scene.add(light6);
+			
+			var lightHelper6 = new THREE.PointLightHelper(light6);
+			//scene.add(lightHelper6);
+			
+			var light7 = new THREE.PointLight(0xffffff, lightIntensity);
+			light7.position.set(100, 160, -100);
+			scene.add(light7);
+			
+			var lightHelper7 = new THREE.PointLightHelper(light7);
+			//scene.add(lightHelper7);
+			
+			var light8 = new THREE.PointLight(0xffffff, lightIntensity);
+			light8.position.set(-100, 160, -100);
+			scene.add(light8);
+			
+			var lightHelper8 = new THREE.PointLightHelper(light8);
+			//scene.add(lightHelper8);
+			
 			
 			var loader = new THREE.ObjectLoader();
 
@@ -109,16 +136,56 @@
 					// Get the object
 					object = obj;
 					
+					//Modified Phong materials loading
 					var jewelMesh = new THREE.MeshPhongMaterial({color: 0xA56B02});
-					object.children[0].material[0] = jewelMesh;
+					jewelMesh.emissive = new THREE.Color(0xA56B02);
+					jewelMesh.emissiveIntensity = 0.07;
+					jewelMesh.specular = new THREE.Color(0xffffff);
+					jewelMesh.shininess = 100;
+					meshArray.push(jewelMesh);
 					
 					var handleMesh = new THREE.MeshPhongMaterial({color: 0x9106B});
-					object.children[0].material[1] = handleMesh;
+					handleMesh.shininess = 42.5;
+					meshArray.push(handleMesh)
+					
+					var hiltTop = new THREE.MeshPhongMaterial({color: 0x722B15});
+					hiltTop.shininess = 1.56;
+					meshArray.push(hiltTop);
+					
+					var blade = new THREE.MeshPhongMaterial({color: 0xcccccc});
+					blade.shininess = 100;
+					meshArray.push(blade);
+					
+					//Add the meshes to the mesh array to be called later
+					for(var i=0; i<meshArray.length; i++){
+						object.children[0].material[i] = meshArray[i];
+						meshArray[i].transparent = true;
+					}
+					
+					//Pedestal objects
+					//var scale = 70;
+					var geometry = new THREE.BoxGeometry(1, 1, 1);
+		      		geometry.scale(baseSize, baseSize, baseSize);
+					var material = new THREE.MeshPhongMaterial({color: 0x808080});
+					meshArray.push(material);
+					
+					var cube1 = new THREE.Mesh(geometry, material);
+					cube1.position.set(baseSize/2, -200, 0);
+					
+		     		var cube2 = new THREE.Mesh(geometry, material);
+		      		cube2.position.set(-baseSize/2, -200, 0);
+		      
+		      		var group = new THREE.Group();
+		      		group.add(cube1);
+		      		group.add(cube2);
+		      		//Add pedestal
+					scene.add(group);
 					
 					
-					console.log(object.children[0].material[0]);
-					//Add the object to the scene
+					//Add the sword to the scene
 					scene.add( object );
+					//Add keyboard controls
+					document.onkeydown = function(ev) {keydown(ev, meshArray, object)};
 				},
 
 				// onProgress callback
@@ -132,7 +199,7 @@
 				}
 			);
 			
-			//Orbit controls
+			//Orbit camera controls
 			controls = new THREE.OrbitControls(camera, renderer.domElemet);
 		}
 		
@@ -140,17 +207,72 @@
 		function animate() {
 			requestAnimationFrame(animate);
 			
-			if(object != null){
-				frameNum += 1;
-				//object.rotation.x += 0.01;
-				//object.rotation.y += 0.01;
-				//object.position.y = 50 * Math.sin(0.01 * frameNum) + 50;
-			}
-			
 			renderer.render(scene, camera);
+			//Update the controls for the camera
 			controls.update();
 		}
 		
+		var y = 0, opacity = 1;
+		
+		//Keystroke function
+		function keydown(ev, meshArray, object, lightArray) {
+			switch (ev.keyCode) {
+			case 90: //Z: increase shininess
+				for(var i=0; i<meshArray.length; i++){
+					meshArray[i].shininess = meshArray[i].shininess * 1.1;
+					if(meshArray[i].shininess > 10000) meshArray[i].shininess = 10000;
+				}
+				break;
+			case 88: //X: decrease shininess
+				for(var i=0; i<meshArray.length; i++){
+					meshArray[i].shininess = meshArray[i].shininess / 1.1;
+					if(meshArray[i].shininess < 0.01) meshArray[i].shininess = 0.01;
+				}
+				break;
+			case 81: //Q: increase y value
+				if(y < 100){
+					y += 1;
+					object.position.y += 1;
+				}
+				break;
+			case 65: //A: decrease y value
+				if(y > 0){
+					y -=1;
+					object.position.y -= 1;
+				}
+				break;
+			case 87: //W: increase opacity
+				for(var i=0; i<meshArray.length; i++){
+					meshArray[i].opacity += 0.01;
+					if(meshArray[i].opacity > 1) meshArray[i].opacity = 1;
+				}
+				break;
+			case 83: //S: decrease opacity
+				for(var i=0; i<meshArray.length; i++){
+					meshArray[i].opacity -= 0.01;
+					if(meshArray[i].opacity < 0) meshArray[i].opacity = 0;
+				}
+				break;
+			case 69: //E: switch depth-test
+				for(var i=0; i<meshArray.length; i++){
+					meshArray[i].depthTest = !meshArray[i].depthTest;
+				}
+			}
+			
+		}
+		
+		
 	</script>
+	<div id="info">
+		<p>Z: Increase shininess</p>
+		<p>X: Decrease shininess</p>
+		<p>Q: Raise sword</p>
+		<p>A: Lower sword</p>
+		<p>W: Increase opacity</p>
+		<p>S: Decrease opacity</p>
+		<p>E: Switch depth test</p>
+		<p>Drag Mouse: Orbit camera</p>
+		<p>Scroll Wheel: Zoom</p>
+	</div>
 </body>
 </html>
